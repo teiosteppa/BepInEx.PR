@@ -78,6 +78,8 @@ public static class Preloader
                 assemblyPatcher.PatchAndLoad();
             }
 
+            Il2CppInteropManager.StartRuntime();
+
 
             Logger.Listeners.Remove(PreloaderLog);
 
