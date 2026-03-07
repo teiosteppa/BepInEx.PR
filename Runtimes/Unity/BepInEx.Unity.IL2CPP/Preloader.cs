@@ -98,7 +98,9 @@ public static class Preloader
     {
         if (libraryName == "GameAssembly")
         {
-            return NativeLibrary.Load(Il2CppInteropManager.GameAssemblyPath, assembly, searchPath);
+            var handle = NativeLibrary.Load(Il2CppInteropManager.GameAssemblyPath, assembly, searchPath);
+            Il2CppInterop.Runtime.Il2CppSymbolMapper.OnGameAssemblyLoaded(handle);
+            return handle;
         }
 
         return IntPtr.Zero;
