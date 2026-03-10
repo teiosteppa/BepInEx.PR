@@ -99,31 +99,12 @@ internal static partial class Il2CppInteropManager
          .AppendLine("Use this if GameAssembly.dll is packed or global-metadata.dat is embedded.")
          .ToString());
 
-    private static readonly ConfigEntry<string> MetadataSignatureToScan = ConfigFile.CoreConfig.Bind(
-     "IL2CPP", "MetadataSignatureToScan",
-     "AC0E0000000000000000000001000000000000000400000001000000040000000500000006000000090000000D0000000F000000040000001C00000005000000200000000500000025000000070000002A0000000A00000031000000070000003B00000005000000420000000500000047000000050000004C0000000F0000005100000005000000600000000700000065000000090000006C0000000600000075000000030000007B0000000D0000007E000000030000008B0000001A0000008E00000001000000A800000004000000A90000000D000000AD00000005000000BA00000007000000BF0000000F000000C600000001000000D500000001000000",
-     new StringBuilder()
-         .AppendLine("The hex string of the metadata signature to scan when searching embedded global-metadata.dat.")
-         .AppendLine("Use this if global-metadata.dat is embedded and beginning of the header is obfuscated.")
-         .AppendLine("IL2CPPInterop will search for global-metadata.dat using this signature.")
-         .ToString());
-
-    private static readonly ConfigEntry<int> ObfuscatedMetadataHeaderOffset = ConfigFile.CoreConfig.Bind(
-     "IL2CPP", "ObfuscatedMetadataHeaderOffset",
-     252,
-     new StringBuilder()
-         .AppendLine("The offset of the standard metadata header to skip when searching embedded global-metadata.dat.")
-         .AppendLine("Use this if global-metadata.dat is embedded and beginning of the header is obfuscated.")
-         .AppendLine("IL2CPPInterop will search for global-metadata.dat using this offset.")
-         .ToString());
-
     private static readonly ConfigEntry<string> MagicToFix = ConfigFile.CoreConfig.Bind(
      "IL2CPP", "MagicToFix",
-     string.Empty,
+     "AF1BB1FA1F000000",
      new StringBuilder()
-         .AppendLine("The magic bytes to fix the header of global-metadta.dat so il2cppdumper can use to determine version.")
-         .AppendLine("Use this if global-metadata.dat is embedded and beginning of the header is obfuscated.")
-         .AppendLine("IL2CPPInterop will fix global-metadata.dat using this magic.")
+         .AppendLine("The magic bytes to fix the header of global-metadata.dat so il2cppdumper can determine the version.")
+         .AppendLine("Use this if the metadata header is obfuscated and needs its magic/version bytes restored.")
          .ToString());
 
     private static readonly ManualLogSource Logger = BepInEx.Logging.Logger.CreateLogSource("InteropManager");
@@ -404,7 +385,7 @@ internal static partial class Il2CppInteropManager
 
         var logger = LoggerFactory.CreateLogger("Il2CppInteropGen");
 
-        Il2CppInterop.Runtime.MemoryUtils.RuntimeModuleDump(logger, out var il2cppBytes, out var metadataBytes, Convert.FromHexString(MetadataSignatureToScan.Value), Convert.FromHexString(MagicToFix.Value), ObfuscatedMetadataHeaderOffset.Value);
+        Il2CppInterop.Runtime.MemoryUtils.RuntimeModuleDump(logger, out var il2cppBytes, out var metadataBytes, Convert.FromHexString(MagicToFix.Value));
 
         // we write to disk once so we can still inspect the byproduct if validation fails later on.
         WriteBinariesToFile(il2cppBytes, metadataBytes);
